@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\articleController;
 use App\Http\Controllers\CommentController;
+use App\Models\User;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,4 +44,25 @@ Route::apiResource('/articles', articleController::class);
 Route::apiResource('/comments', CommentController::class);
 
 
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'Message erreur :' => 'Email ou mot de passe incorrect'
+        ]);
+    }
+
+    $token = $user->createToken($request->email)->plainTextToken;
+    $user->token =$token;
+
+    return response()->json([
+        'token' => $user
+    ]);
+});
 
