@@ -25,10 +25,11 @@ class ArticleResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
-            'photo' => $this->photo,
-            'auteur' => $this->auteur,
-            'comment' => $this->comments,
-            'content' => $this->content,
+            "photo" => $this->photo,
+            "auteur" => $this->auteur,
+            "content" => $this->content,
+            'comment' => $this->comments, //relation avec les commentaires
+            'category' => $this->categories, //relation avec la categorie
             // 'created_at' => $this->created_at,
             // 'updated_at' => $this->updated_at,
         ];

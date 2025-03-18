@@ -2,52 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Illuminate\Http\Request;
+//use Str marche egalement mais c'est mieux de faire appel a Str depuis sa source 
+use Illuminate\Support\Str;
 
 class articleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+
+    public function index()
     {
-        // $article = Article::with('comments')->get();
-
-        // return $article;
-
-        return ArticleResource::collection(Article::paginate(1));
+        //return ArticleResource::collection(Article::paginate(1));
+        return ArticleResource::collection(Article::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function store(ArticleRequest $request)
     {
-        $article = new Article();
+        //validation des données avec array_merge via à ArticleRequest
+        $data = array_merge(
+            $request->all(),
+            [
+                "slug" => Str::slug($request->title),
+            ]
+        );
 
-        $article->title = $request->title;
-        $article->slug = $request->slug;
-        $article->photo = $request->photo;
-        $article->auteur = $request->auteur;
-        $article->content = $request-> content;
+        //creation de l'article via create en passant au au validator 
+        $article = Article::create($data);
 
-        return $article->save();
-        
+ 
+        // Attacher la catégorie à l'article
+        $article->categories()->attach($request->category_id);
+
+        // Récupérer toutes les catégories associées à cet article
+        $categories = $article->categories;
+
+        // Retourner la liste des catégories associées (par exemple, en JSON)
+        return response()->json($categories);
     }
 
-    /**
-     * Display the specified resource.
-     */
+ 
     public function show( Article $article)
     {
         return new ArticleResource($article);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Article $article)
     {
         //
