@@ -24,24 +24,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-// Route::get('/pays', function(){
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/articles', [articleController::class, 'index']);
+    Route::apiResource('/comments', CommentController::class);
+});
 
-//     //$tb = array("RDC", "Bresil", "France", "Chine", "canada");
-//     //return $tb;
-
-//     $pays = [
-//        ["nom"=>"RDC", "capital"=>"kinshasa"],
-//        ["nom"=>"Gabon", "Capitale"=>"Libreville"],
-//        ["nom"=>"Angola", "Capitale"=>"Luanda"]
-//     ];
-
-//     return $pays;
-    
-// });
-
-
-Route::apiResource('/articles', articleController::class);
-Route::apiResource('/comments', CommentController::class);
 
 
 Route::post('/login', function (Request $request) {
